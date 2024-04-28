@@ -1,0 +1,506 @@
+definitions:
+  handlers.BaseOutput:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+      pagination:
+        $ref: '#/definitions/types.PaginationDTO'
+    type: object
+  types.BaseRelationDTO:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  types.CategoryDTO:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      parent:
+        $ref: '#/definitions/types.BaseRelationDTO'
+      parentId:
+        type: integer
+      slug:
+        type: string
+    type: object
+  types.ChangePasswordRequest:
+    properties:
+      newPassword:
+        type: string
+      oldPassword:
+        type: string
+    required:
+    - newPassword
+    - oldPassword
+    type: object
+  types.CreateRoleDTO:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      permissions:
+        items:
+          type: integer
+        type: array
+    required:
+    - name
+    - permissions
+    type: object
+  types.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  types.MediaDTO:
+    properties:
+      fileName:
+        type: string
+      id:
+        type: integer
+      url:
+        type: string
+    type: object
+  types.PaginationDTO:
+    properties:
+      numberOfElements:
+        type: integer
+      totalElements:
+        type: integer
+      totalPages:
+        type: integer
+    type: object
+  types.RegisterRequest:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      username:
+        type: string
+    required:
+    - full_name
+    - password
+    - username
+    type: object
+  types.RoleDTO:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  types.StoreCategoryDTO:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      parentId:
+        type: integer
+      slug:
+        type: string
+    required:
+    - name
+    - slug
+    type: object
+  types.StoreUserRequest:
+    properties:
+      email:
+        type: string
+      fullName:
+        type: string
+      password:
+        type: string
+      roles:
+        items:
+          type: integer
+        type: array
+      username:
+        type: string
+    required:
+    - email
+    - fullName
+    - password
+    - roles
+    - username
+    type: object
+  types.UpdateUserRequest:
+    properties:
+      fullName:
+        type: string
+      password:
+        type: string
+      roles:
+        items:
+          type: integer
+        type: array
+    required:
+    - fullName
+    - roles
+    type: object
+  types.UserDTO:
+    properties:
+      accountType:
+        type: integer
+      created_at:
+        type: string
+      email:
+        type: string
+      fullName:
+        type: string
+      id:
+        type: integer
+      roles:
+        items:
+          type: string
+        type: array
+      status:
+        type: integer
+      username:
+        type: string
+    type: object
+  types.UserInfoDTO:
+    properties:
+      accountType:
+        type: integer
+      email:
+        type: string
+      fullName:
+        type: string
+      id:
+        type: integer
+      permissions:
+        items:
+          type: string
+        type: array
+      status:
+        type: integer
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+  title: Core API Docs
+  version: "1.0"
+paths:
+  /api/v1/admin/categories:
+    get:
+      description: Get category list
+      responses:
+        "200":
+          description: token
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.BaseOutput'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/types.CategoryDTO'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get category list
+      tags:
+      - Category
+    post:
+      description: Create category
+      parameters:
+      - description: Register
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/types.StoreCategoryDTO'
+      responses:
+        "200":
+          description: Category
+          schema:
+            $ref: '#/definitions/handlers.BaseOutput'
+      security:
+      - Bearer: []
+      summary: Create category
+      tags:
+      - Category
+  /api/v1/admin/categories/{id}:
+    put:
+      description: Update category
+      parameters:
+      - description: Register
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/types.StoreCategoryDTO'
+      - description: CategoryID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Category
+          schema:
+            $ref: '#/definitions/handlers.BaseOutput'
+      security:
+      - Bearer: []
+      summary: Update category
+      tags:
+      - Category
+  /api/v1/admin/media:
+    get:
+      description: Get media list
+      parameters:
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: size
+        type: integer
+      - in: query
+        name: userID
+        type: integer
+      responses:
+        "200":
+          description: Media
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.BaseOutput'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.MediaDTO'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get media list
+      tags:
+      - Media
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload media
+      parameters:
+      - description: Upload
+        in: formData
+        name: files
+        required: true
+        type: file
+      responses: {}
+      security:
+      - Bearer: []
+      summary: Upload media
+      tags:
+      - Media
+  /api/v1/admin/roles:
+    get:
+      description: Get role list
+      responses:
+        "200":
+          description: Role
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.BaseOutput'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/types.RoleDTO'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get role list
+      tags:
+      - Role
+    post:
+      description: Create role
+      parameters:
+      - description: Role
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateRoleDTO'
+      responses:
+        "200":
+          description: Role
+          schema:
+            $ref: '#/definitions/handlers.BaseOutput'
+      security:
+      - Bearer: []
+      summary: Create role
+      tags:
+      - Role
+  /api/v1/admin/roles/{id}:
+    put:
+      description: Update role
+      parameters:
+      - description: Role
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateRoleDTO'
+      - description: RoleID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Role
+          schema:
+            $ref: '#/definitions/handlers.BaseOutput'
+      security:
+      - Bearer: []
+      summary: Update role
+      tags:
+      - Role
+  /api/v1/admin/users:
+    get:
+      description: Get user list
+      responses:
+        "200":
+          description: desc
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.BaseOutput'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/types.UserDTO'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get user list
+      tags:
+      - User
+    post:
+      description: Create user
+      parameters:
+      - description: User
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/types.StoreUserRequest'
+      responses:
+        "200":
+          description: desc
+          schema:
+            $ref: '#/definitions/handlers.BaseOutput'
+      security:
+      - Bearer: []
+      summary: Create user
+      tags:
+      - User
+  /api/v1/admin/users/{id}:
+    put:
+      description: Update user
+      parameters:
+      - description: User
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/types.UpdateUserRequest'
+      responses:
+        "200":
+          description: desc
+          schema:
+            $ref: '#/definitions/handlers.BaseOutput'
+      security:
+      - Bearer: []
+      summary: Update user
+      tags:
+      - User
+  /api/v1/admin/users/change-password:
+    patch:
+      description: Change user password
+      parameters:
+      - description: User
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/types.ChangePasswordRequest'
+      responses:
+        "200":
+          description: desc
+          schema:
+            $ref: '#/definitions/handlers.BaseOutput'
+      security:
+      - Bearer: []
+      summary: Change user password
+      tags:
+      - User
+  /api/v1/auth/login:
+    post:
+      description: Login system
+      parameters:
+      - description: Login
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginRequest'
+      responses:
+        "200":
+          description: token
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.BaseOutput'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Login
+      tags:
+      - Auth
+  /api/v1/auth/register:
+    post:
+      description: Register system
+      parameters:
+      - description: Register
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/types.RegisterRequest'
+      responses:
+        "200":
+          description: token
+          schema:
+            $ref: '#/definitions/handlers.BaseOutput'
+      summary: Register
+      tags:
+      - Auth
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

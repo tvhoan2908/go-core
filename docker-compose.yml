@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: core_api
+      POSTGRES_USER: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - core_dbdata:/var/lib/postgresql
+    networks:
+      - core_network
+  
+  redis:
+    image: redis
+    restart: unless-stopped
+    volumes:
+      - core_redis:/data
+    ports:
+      - 6380:6379
+    networks:
+      - core_network
+
+volumes: 
+  core_dbdata:
+    driver: local
+  core_redis:
+
+networks: 
+  core_network:
+    driver: bridge
